@@ -1,7 +1,7 @@
 # mexid
 Mexican ID generator
 
-This project was creted for two reasons:
+This project was created for two reasons:
 1. Keeping programming skills up to date
 2. Have some fun!
 
