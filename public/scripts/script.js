@@ -1,9 +1,9 @@
 // create the module and name it scotchApp
 // also include ngRoute for all our routing needs
-var scotchApp = angular.module('scotchApp', ['ngRoute']);
+var mexidApp = angular.module('mexidApp', ['ngRoute']);
 
 // configure our routes
-scotchApp.config(function($routeProvider) {
+mexidApp.config(function($routeProvider) {
     $routeProvider
 
         // route for the home page
@@ -21,16 +21,16 @@ scotchApp.config(function($routeProvider) {
 });
 
 // create the controller and inject Angular's $scope
-scotchApp.controller('mexicanidController', function($scope) {
+mexidApp.controller('mexicanidController', function($scope) {
     // create a message to display in our view
     $scope.message = 'Create your own Mexican ID!';
 });
 
-scotchApp.controller('contactController', function($scope) {
+mexidApp.controller('contactController', function($scope) {
     $scope.message = 'You can also contact me!';
 });
 
-scotchApp.directive("idcard", function(){
+mexidApp.directive("idcard", function(){
 return {
     restrict: "A",
         link: function(scope, element){
