@@ -1,9 +1,9 @@
 // create the module and name it scotchApp
 // also include ngRoute for all our routing needs
-var scotchApp = angular.module('scotchApp', ['ngRoute']);
+var mexidApp = angular.module('mexidApp', ['ngRoute']);
 
 // configure our routes
-scotchApp.config(function($routeProvider) {
+mexidApp.config(function($routeProvider) {
     $routeProvider
 
         // route for the home page
@@ -21,16 +21,16 @@ scotchApp.config(function($routeProvider) {
 });
 
 // create the controller and inject Angular's $scope
-scotchApp.controller('mainController', function($scope) {
+mexidApp.controller('mainController', function($scope) {
     // create a message to display in our view
     $scope.message = 'Create your own Mexican ID!';
 });
 
-scotchApp.controller('contactController', function($scope) {
+mexidApp.controller('contactController', function($scope) {
     $scope.message = 'You can also contact me!';
 });
 
-scotchApp.directive("idcard", function(){
+mexidApp.directive("idcard", function(){
 return {
     restrict: "A",
         link: function(scope, element){
@@ -103,3 +103,172 @@ return {
        }
     };
 });
+
+
+var UploadController = function ($scope, fileReader) {
+
+    console.log(fileReader);
+    $scope.getFile = function () {
+        $scope.progress = 0;
+        fileReader.readAsDataUrl($scope.file, $scope)
+                .then(function(result) {
+                    $scope.imageSrc = result;
+        });
+    };
+ 
+    $scope.$on("fileProgress", function(e, progress) {
+        $scope.progress = progress.loaded / progress.total;
+    });
+ 
+};
+
+mexidApp.directive("ngFileSelect",function(){
+
+  return {
+    link: function($scope,element){
+        element.bind("change", function(e){
+            $scope.file = (e.srcElement || e.target).files[0];
+            $scope.getFile();
+            var canvas = document.getElementById("output");
+            var ctx = canvas.getContext('2d');
+            var img = document.createElement("img");
+            img.src = $scope.imageSrc;
+            ctx.drawImage(img,3,1, 55, 55);
+            
+            
+        });
+      
+    }
+    
+};
+  
+  
+})
+
+(function (module) {
+     
+    var fileReader = function ($q, $log) {
+ 
+        var onLoad = function(reader, deferred, scope) {
+            return function () {
+                scope.$apply(function () {
+                    deferred.resolve(reader.result);
+                });
+            };
+        };
+ 
+        var onError = function (reader, deferred, scope) {
+            return function () {
+                scope.$apply(function () {
+                    deferred.reject(reader.result);
+                });
+            };
+        };
+ 
+        var onProgress = function(reader, scope) {
+            return function (event) {
+                scope.$broadcast("fileProgress",
+                    {
+                        total: event.total,
+                        loaded: event.loaded
+                    });
+            };
+        };
+ 
+        var getReader = function(deferred, scope) {
+            var reader = new FileReader();
+            reader.onload = onLoad(reader, deferred, scope);
+            reader.onerror = onError(reader, deferred, scope);
+            reader.onprogress = onProgress(reader, scope);
+            return reader;
+        };
+ 
+        var readAsDataURL = function (file, scope) {
+            var deferred = $q.defer();
+             
+            var reader = getReader(deferred, scope);         
+            reader.readAsDataURL(file);
+             
+            return deferred.promise;
+        };
+ 
+        return {
+            readAsDataUrl: readAsDataURL  
+        };
+    };
+ 
+    module.factory("fileReader",
+                   ["$q", "$log", fileReader]);
+ 
+}(angular.module("mexidApp")));
+
+
+
+
+
+/*
+
+	var image = new Image();
+	var canvas = document.getElementById("output");
+	var ctx = canvas.getContext("2d");
+	image.onload = function () {
+		// load image, and draw it to canvas 
+		document.getElementById("load-time").innerHTML = Math.round((new Date()).getTime() - elapsed_time).toString() + "ms";
+		document.getElementById("detection-time").innerHTML = "Measuring ...";
+		var dim = getImageDim(image);
+		document.getElementById("image-dim").innerHTML = dim.width.toString() + "x" + dim.height.toString();
+		var boundingWidth = document.getElementById("content").offsetWidth - 4;
+		var boundingHeight = window.innerHeight - (document.getElementById("header").offsetHeight + document.getElementById("footer").offsetHeight + document.getElementById("urlbox").offsetHeight + document.getElementById("stats").offsetHeight) - 120;
+		var viewport = document.getElementById("viewport");
+		var newWidth = dim.width, newHeight = dim.height, scale = 1;
+		if (dim.width * boundingHeight > boundingWidth * dim.height) {
+			newWidth = boundingWidth;
+			newHeight = boundingWidth * dim.height / dim.width;
+			scale = newWidth / dim.width;
+		} else {
+			newHeight = boundingHeight;
+			newWidth = boundingHeight * dim.width / dim.height;
+			scale = newHeight / dim.height;
+		}
+		viewport.style.width = newWidth.toString() + "px";
+		viewport.style.height = newHeight.toString() + "px";
+		canvas.width = newWidth;
+		canvas.style.width = newWidth.toString() + "px";
+		canvas.height = newHeight;
+		canvas.style.height = newHeight.toString() + "px";
+		ctx.drawImage(image, 0, 0, newWidth, newHeight);
+		elapsed_time = (new Date()).getTime();
+		function post(comp) {
+			document.getElementById("num-faces").innerHTML = comp.length.toString();
+			document.getElementById("detection-time").innerHTML = Math.round((new Date()).getTime() - elapsed_time).toString() + "ms";
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = 'rgba(230,87,0,0.8)';
+			// draw detected area 
+			for (var i = 0; i < comp.length; i++) {
+				ctx.beginPath();
+				ctx.arc((comp[i].x + comp[i].width * 0.5) * scale, (comp[i].y + comp[i].height * 0.5) * scale,
+						(comp[i].width + comp[i].height) * 0.25 * scale * 1.2, 0, Math.PI * 2);
+				ctx.stroke();
+			}
+		}
+		// call main detect_objects function
+		if (async) {
+			ccv.detect_objects({ "canvas" : ccv.grayscale(ccv.pre(image)),
+								 "cascade" : cascade,
+								 "interval" : 5,
+								 "min_neighbors" : 1,
+								 "async" : true,
+								 "worker" : 1 })(post);
+		} else {
+			var comp = ccv.detect_objects({ "canvas" : ccv.grayscale(ccv.pre(image)),
+											"cascade" : cascade,
+											"interval" : 5,
+											"min_neighbors" : 1 });
+			post(comp);
+		}
+	};
+	image.src = src;
+
+}
+*/
+

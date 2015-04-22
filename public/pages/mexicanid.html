@@ -11,9 +11,22 @@
         <p>Step 2: Select your picture</p>
     </div>
     <div id="content">
-        <div id="viewport"><div id="view-hint">Drag &amp; Drop<br>or <u>Select</u> To</div><div id="view-horz"></div><div id="view-vtic"></div><div><canvas id="output"></canvas><input type="file" id="file-selector" accept="image/*"></div>
+        <div id="viewport">
+            <div id="view-hint"><u>Click to Select</u></div>
+            <!--<div id="view-horz"></div>
+            <div id="view-vtic"></div>-->
+            <div ng-controller="UploadController">
+                <canvas id="output"></canvas>
+                <input type="file" id="file-selector" accept="image/*" ng-file-select="onFileSelect($files)" />
+                <i ng-hide="imageSrc">No image choosed</i>
+                <img ng-src="{{imageSrc}}" /><br/>
+                <!--<b>Progress:</b>
+                <progress value="{{progress}}"></progress>-->
+            </div>
+        </div>
     </div>    
-    <canvas  width="466" height="300" id="id-canvas" idcard>
-       Your browser does not support the HTML5 canvas tag.
-    </canvas>
+        <canvas  width="466" height="300" id="id-canvas" idcard>
+           Your browser does not support the HTML5 canvas tag.
+        </canvas>
+    </div>
 </div>
