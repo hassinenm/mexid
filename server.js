@@ -1,93 +1,39 @@
-// server.js
-
-// set up ========================
+// define modules
 var express  = require('express');
-var app      = express();                           // create our app w/ express
-var mongoose = require('mongoose');                 // mongoose for mongodb
-var morgan = require('morgan');                     // log requests to the console (express4)
-var bodyParser = require('body-parser');            // pull information from HTML POST (express4)
-var methodOverride = require('method-override');    // simulate DELETE and PUT (express4)
+var app      = express();                                       // create our app with express
+var mongoose = require('mongoose');                             // mongoose for mongodb
+var morgan = require('morgan');                                 // log requests to the console (express4)
+var bodyParser = require('body-parser');                        // pull information from HTML POST (express4)
+var methodOverride = require('method-override');                // simulate DELETE and PUT (express4)
 
-// configuration =================
 
-    // mongoose.connect('mongodb://node:nodeuser@mongo.onmodulus.net:27017/uwO3mypu');     // connect to mongoDB database on modulus.io
-mongoose.connect('mongodb://localhost/mexid');
+// read database connection parameters and connect to database
+var db = require('./config/db');
+mongoose.connect(db.url);
 
-app.use(express.static(__dirname + '/public'));                 // set the static files location /public/img will be /img for users
-app.use(morgan('dev'));                                         // log every request to the console
-app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
-app.use(bodyParser.json());                                     // parse application/json
-app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
+// set the static files location /public/images will be /images for users
+app.use(express.static(__dirname + '/public'));                 
+
+//log every request to the console
+app.use(morgan('dev'));                                         
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({'extended':'true'})); 
+
+// parse application/json
+app.use(bodyParser.json());
+
+// parse application/vnd.api+json as json
+app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
+
+// override with the X-HTTP-Method-Override header in the request. simulate DELETE/PUT
 app.use(methodOverride());
 
-// define model =================
-var schema = new mongoose.Schema({
-    forename: 'String',
-    surname: 'String'
-                                 });
-var Mexican = mongoose.model('Mexican', schema);
 
+// configure routes
+require('./app/routes')(app);
 
-// routes ======================================================================
-
-// api ---------------------------------------------------------------------
-// get all mexicans
-app.get('/api/mexicans', function(req, res) {
-
-    // use mongoose to get all todos in the database
-    Mexican.find(function(err, mexicans) {
-
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-            res.send(err)
-
-        res.json(mexicans); // return all mexicans in JSON format
-    });
-});
-
-// create mexican and send back all mexicans after creation
-app.post('/api/mexicans', function(req, res) {
-
-    // create a mexican, information comes from AJAX request from Angular
-    Mexican.create({
-        text : req.body.text,
-        done : false
-    }, function(err, mexican) {
-        if (err)
-            res.send(err);
-
-        // get and return all the todos after you create another
-        Mexican.find(function(err, mexicans) {
-            if (err)
-                res.send(err)
-            res.json(mexicans);
-        });
-    });
-
-});
-
-// delete a mexican
-app.delete('/api/mexicans/:mexican_id', function(req, res) {
-    Mexican.remove({
-        _id : req.params.mexican_id
-    }, function(err, mexican) {
-        if (err)
-            res.send(err);
-
-        // get and return all the todos after you create another
-        Mexican.find(function(err, mexicans) {
-            if (err)
-                res.send(err)
-            res.json(mexicans);
-        });
-    });
-});
-
-// application -------------------------------------------------------------
-app.get('*', function(req, res) {
-    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
-
-// listen (start app with node server.js) ======================================
-app.listen(8080);
-console.log("App listening on port 8080");
+// set listening port and start application
+var port = process.env.PORT || 8080;
+app.listen(port);
+console.log("Mexid app listening on port 8080");

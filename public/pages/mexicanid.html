@@ -1,13 +1,13 @@
 <div id="page-wrap">
-    <div id="instructions">
+    <div class="instructions">
         <p>Have you ever wondered are you MexiCAN or MexiCAN'T?<br><br>
             Let's find out!<br><br>
             Step 1: Type your name</p>
     </div>
     <form>
-        <input type="text" class="forminput" name="firstname"><br><br>
+        <input type="text" class="forminput" ng-model="nameInput"><br><br>
     </form>
-    <div id="instructions">
+    <div class="instructions">
         <p>Step 2: Select your picture</p>
     </div>
     <div id="content">
@@ -24,9 +24,13 @@
                 <progress value="{{progress}}"></progress>-->
             </div>
         </div>
-    </div>    
-        <canvas  width="466" height="300" id="id-canvas" idcard>
-           Your browser does not support the HTML5 canvas tag.
-        </canvas>
     </div>
+    <div class="instructions">
+        <p>Step 3: Press GO!</p>
+        <div class="round-button" ng-click="goClick()">GO!</div>
+    </div><br><br>
+    <canvas  width="466" height="300" id="id-canvas" idcard>
+        Your browser does not support the HTML5 canvas tag.
+    </canvas>
+    <p>In total {{ mexicans.length }} mexicans discovered so far</p>
 </div>

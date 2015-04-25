@@ -21,9 +21,35 @@ mexidApp.config(function($routeProvider) {
 });
 
 // create the controller and inject Angular's $scope
-mexidApp.controller('mainController', function($scope) {
+mexidApp.controller('mainController', function($scope, $http) {
     // create a message to display in our view
+    $http.get('/api/mexicans')
+        .success(function(data) {
+            $scope.mexicans = data;
+            console.log(data);
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+        });
     $scope.message = 'Create your own Mexican ID!';
+    // GO! button clicked, generating mexican ID
+    $scope.goClick = function() {
+        alert($scope.nameInput);
+        $http.post('api/mexicans', { name : $scope.nameInput })
+            .success(function(data, status, headers, config) {
+                alert(data);
+            // this callback will be called asynchronously
+            // when the response is available
+        })
+            .error(function(data, status, headers, config) {
+                alert(data);
+                console.log('Error: ' + data);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+    };
+    
+    
 });
 
 mexidApp.controller('contactController', function($scope) {
@@ -124,26 +150,20 @@ var UploadController = function ($scope, fileReader) {
 
 mexidApp.directive("ngFileSelect",function(){
 
-  return {
-    link: function($scope,element){
-        element.bind("change", function(e){
-            $scope.file = (e.srcElement || e.target).files[0];
-            $scope.getFile();
-            var canvas = document.getElementById("output");
-            var ctx = canvas.getContext('2d');
-            var img = document.createElement("img");
-            img.src = $scope.imageSrc;
-            ctx.drawImage(img,3,1, 55, 55);
-            
-            
-        });
-      
-    }
-    
-};
-  
-  
-})
+    return {
+        link: function($scope,element){
+            element.bind("change", function(e){
+                $scope.file = (e.srcElement || e.target).files[0];
+                $scope.getFile();
+                var canvas = document.getElementById("output");
+                var ctx = canvas.getContext('2d');
+                var img = document.createElement("img");
+                img.src = $scope.imageSrc;
+                ctx.drawImage(img,3,1, 55, 55);        
+            });     
+        } 
+    }; 
+});
 
 (function (module) {
      
