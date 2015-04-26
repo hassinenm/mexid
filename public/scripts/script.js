@@ -36,7 +36,6 @@ mexidApp.controller('mainController', function($scope, $http) {
     
     // GO! button clicked, generating mexican ID
     $scope.goClick = function() {
-        alert($scope.nameInput);
         $http.post('api/mexicans', { name : $scope.nameInput })
             .success(function(data, status, headers, config) {
                 $scope.forename = data.forename;
@@ -103,8 +102,6 @@ return {
             ctx.fillStyle = 'red';
             ctx.fillText("FALSO", 150, 100);
             ctx.restore();
-            
-            alert(scope.lastname);
             
             ctx.font = "9px Calibri";
             ctx.fillStyle = 'black';
