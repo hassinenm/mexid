@@ -23,6 +23,8 @@ mexidApp.config(function($routeProvider) {
 // create the controller and inject Angular's $scope
 mexidApp.controller('mainController', function($scope, $http) {
     // create a message to display in our view
+    $scope.message = 'Create your own Mexican ID!';
+    
     $http.get('/api/mexicans')
         .success(function(data) {
             $scope.mexicans = data;
@@ -31,19 +33,19 @@ mexidApp.controller('mainController', function($scope, $http) {
         .error(function(data) {
             console.log('Error: ' + data);
         });
-    $scope.message = 'Create your own Mexican ID!';
+    
     // GO! button clicked, generating mexican ID
     $scope.goClick = function() {
         alert($scope.nameInput);
         $http.post('api/mexicans', { name : $scope.nameInput })
             .success(function(data, status, headers, config) {
-                alert(data);
+                $scope.forename = data.forename;
+                $scope.lastname = data.lastname;
             // this callback will be called asynchronously
             // when the response is available
         })
             .error(function(data, status, headers, config) {
-                alert(data);
-                console.log('Error: ' + data);
+                alert('Error: ' + data);
             // called asynchronously if an error occurs
             // or server returns response with an error status.
         });
@@ -53,7 +55,7 @@ mexidApp.controller('mainController', function($scope, $http) {
 });
 
 mexidApp.controller('contactController', function($scope) {
-    $scope.message = 'You can also contact me!';
+    $scope.message = 'You can also contact me: mh@live.fi ';
 });
 
 mexidApp.directive("idcard", function(){
@@ -93,6 +95,16 @@ return {
             ctx.font = "12px Calibri";
             ctx.fillStyle = 'white';
             ctx.fillText("CONSULAR ID CARD", 350, 20);
+            
+            ctx.save();
+            ctx.translate(100,300);
+            ctx.rotate(-0.25*Math.PI);
+            ctx.font = "50px Calibri";
+            ctx.fillStyle = 'red';
+            ctx.fillText("FALSO", 150, 100);
+            ctx.restore();
+            
+            alert(scope.lastname);
             
             ctx.font = "9px Calibri";
             ctx.fillStyle = 'black';
@@ -155,11 +167,14 @@ mexidApp.directive("ngFileSelect",function(){
             element.bind("change", function(e){
                 $scope.file = (e.srcElement || e.target).files[0];
                 $scope.getFile();
+
+                /*
                 var canvas = document.getElementById("output");
                 var ctx = canvas.getContext('2d');
                 var img = document.createElement("img");
                 img.src = $scope.imageSrc;
-                ctx.drawImage(img,3,1, 55, 55);        
+                ctx.drawImage(img,3,1, 55, 55);
+                */
             });     
         } 
     }; 

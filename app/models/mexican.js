@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 module.exports = mongoose.model('Mexican', {
     forename: 'String',
-    surname: 'String',
+    lastname: 'String',
     birth_place: 'String',
     birth_date: 'String',
     address1: 'String',

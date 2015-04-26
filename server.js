@@ -8,8 +8,20 @@ var methodOverride = require('method-override');                // simulate DELE
 
 
 // read database connection parameters and connect to database
-var db = require('./config/db');
-mongoose.connect(db.url);
+var dbURI = require('./config/db');
+mongoose.connect(dbURI.url);
+// CONNECTION EVENTS 
+mongoose.connection.on('connected', function () {
+  console.log('Mongoose default connection open to ' + dbURI.url);
+}); 
+
+mongoose.connection.on('error',function (err) { 
+  console.log('Mongoose default connection error: ' + err);
+}); 
+
+mongoose.connection.on('disconnected', function () { 
+  console.log('Mongoose default connection disconnected'); 
+});;
 
 // set the static files location /public/images will be /images for users
 app.use(express.static(__dirname + '/public'));                 

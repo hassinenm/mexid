@@ -42,44 +42,30 @@ module.exports = function(app) {
     app.post('/api/mexicans', function(req, res) {
         var names = req.body.name.split(' ');
         console.log("Posted names " + names);
-        
-        var foreNameOrig = names[0];
-        var foreNameMex;
-        
-        var surNameOrig = names[1];
-        var surNameMex;
 
-        // quick and dirty random name, perhaps in future we could try find somethin similar...
-        Forename.findOne({}, function (err, doc){
-            // doc is a Document
-            foreNameMex = doc.name;
-        });
-        
-        Lastname.findOne({}, function (err, doc){
-            // doc is a Document
-            lastNameMex = doc.name;
-        });
-
-        
-        // create a mexican with new names
-        Mexican.create({
-            forename : foreNameMex,
-            surname : surNameMex
-        }, function(err, mexican) {
+        // quick and dirty solution, first name from database, perhaps in future we could try find something better...
+        Forename.find(function (err, forenames){
+            //console.log(doc[0].name);
             if (err)
                 res.send(err);
-            res.json(mexican);
-
-            // return mexican after creation
-            /*
-            Mexican.findById(req.params.beer_id, function(err, mexican) {
+            Lastname.find(function (err, lastnames){
                 if (err)
                     res.send(err);
-                res.json(mexican);
+                        // create a mexican with new names
+                Mexican.create({
+                    forename : forenames[0].name,
+                    lastname : lastnames[0].name,
+                    birth_place: 'OAXACA',
+                    birth_date: '12 SEP 1975',
+                    address1: '1273 TEQUILLA AVE',
+                    address2: 'BUENOS AGAVES'
+                }, function(err, mexican) {
+                    if (err)
+                        res.send(err);
+                    res.json(mexican);
+                });
             });
-            */
-        });
-
+        });   
     });
 
     // delete a mexican
@@ -110,6 +96,20 @@ module.exports = function(app) {
                 res.send(err);
 
             res.json(forenames); // return all mexicans in JSON format
+        });
+    });
+    
+    // get all lastnames
+    app.get('/api/lastname', function(req, res) {
+
+        // use mongoose to get all forenames in the database
+        Lastname.find(function(err, lastnames) {
+
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err);
+
+            res.json(lastnames); // return all mexicans in JSON format
         });
     });
     
