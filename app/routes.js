@@ -113,6 +113,31 @@ module.exports = function(app) {
         });
     });
     
+        // create mexican and send back all mexicans after creation
+    app.post('/api/lastnames', function(req, res) {
+        var names = req.body.name.split(' ');
+        console.log("Posted lastname " + req.body.name);
+        Forename.create({
+             name : req.body.name
+         }, function(err, mexican) {
+             if (err)
+                 res.send(err);
+             res.json(mexican);
+         });   
+    });
+    
+    app.post('/api/firstnames', function(req, res) {
+        var names = req.body.name.split(' ');
+        console.log("Posted firstname " + req.body.name);
+        Firstname.create({
+             name : req.body.name
+         }, function(err, mexican) {
+             if (err)
+                 res.send(err);
+             res.json(mexican);
+         });   
+    });
+    
     app.get('*', function(req, res) {
         res.sendfile('./public/index.html');
     });

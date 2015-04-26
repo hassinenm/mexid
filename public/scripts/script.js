@@ -167,14 +167,6 @@ mexidApp.directive("ngFileSelect",function(){
             element.bind("change", function(e){
                 $scope.file = (e.srcElement || e.target).files[0];
                 $scope.getFile();
-
-                /*
-                var canvas = document.getElementById("output");
-                var ctx = canvas.getContext('2d');
-                var img = document.createElement("img");
-                img.src = $scope.imageSrc;
-                ctx.drawImage(img,3,1, 55, 55);
-                */
             });     
         } 
     }; 
@@ -236,74 +228,3 @@ mexidApp.directive("ngFileSelect",function(){
                    ["$q", "$log", fileReader]);
  
 }(angular.module("mexidApp")));
-
-
-
-
-
-/*
-
-	var image = new Image();
-	var canvas = document.getElementById("output");
-	var ctx = canvas.getContext("2d");
-	image.onload = function () {
-		// load image, and draw it to canvas 
-		document.getElementById("load-time").innerHTML = Math.round((new Date()).getTime() - elapsed_time).toString() + "ms";
-		document.getElementById("detection-time").innerHTML = "Measuring ...";
-		var dim = getImageDim(image);
-		document.getElementById("image-dim").innerHTML = dim.width.toString() + "x" + dim.height.toString();
-		var boundingWidth = document.getElementById("content").offsetWidth - 4;
-		var boundingHeight = window.innerHeight - (document.getElementById("header").offsetHeight + document.getElementById("footer").offsetHeight + document.getElementById("urlbox").offsetHeight + document.getElementById("stats").offsetHeight) - 120;
-		var viewport = document.getElementById("viewport");
-		var newWidth = dim.width, newHeight = dim.height, scale = 1;
-		if (dim.width * boundingHeight > boundingWidth * dim.height) {
-			newWidth = boundingWidth;
-			newHeight = boundingWidth * dim.height / dim.width;
-			scale = newWidth / dim.width;
-		} else {
-			newHeight = boundingHeight;
-			newWidth = boundingHeight * dim.width / dim.height;
-			scale = newHeight / dim.height;
-		}
-		viewport.style.width = newWidth.toString() + "px";
-		viewport.style.height = newHeight.toString() + "px";
-		canvas.width = newWidth;
-		canvas.style.width = newWidth.toString() + "px";
-		canvas.height = newHeight;
-		canvas.style.height = newHeight.toString() + "px";
-		ctx.drawImage(image, 0, 0, newWidth, newHeight);
-		elapsed_time = (new Date()).getTime();
-		function post(comp) {
-			document.getElementById("num-faces").innerHTML = comp.length.toString();
-			document.getElementById("detection-time").innerHTML = Math.round((new Date()).getTime() - elapsed_time).toString() + "ms";
-			ctx.lineWidth = 2;
-			ctx.strokeStyle = 'rgba(230,87,0,0.8)';
-			// draw detected area 
-			for (var i = 0; i < comp.length; i++) {
-				ctx.beginPath();
-				ctx.arc((comp[i].x + comp[i].width * 0.5) * scale, (comp[i].y + comp[i].height * 0.5) * scale,
-						(comp[i].width + comp[i].height) * 0.25 * scale * 1.2, 0, Math.PI * 2);
-				ctx.stroke();
-			}
-		}
-		// call main detect_objects function
-		if (async) {
-			ccv.detect_objects({ "canvas" : ccv.grayscale(ccv.pre(image)),
-								 "cascade" : cascade,
-								 "interval" : 5,
-								 "min_neighbors" : 1,
-								 "async" : true,
-								 "worker" : 1 })(post);
-		} else {
-			var comp = ccv.detect_objects({ "canvas" : ccv.grayscale(ccv.pre(image)),
-											"cascade" : cascade,
-											"interval" : 5,
-											"min_neighbors" : 1 });
-			post(comp);
-		}
-	};
-	image.src = src;
-
-}
-*/
-
